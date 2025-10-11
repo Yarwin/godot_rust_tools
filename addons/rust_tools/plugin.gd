@@ -27,6 +27,10 @@ func _exit_tree() -> void:
 
 
 func _build() -> bool:
+	var build_before_run := RustToolsSettings.get_enable_build_before_run()
+	if not build_before_run:
+		print_rich("  Godot Rust Tools: [b][color=green]Skipping build before running[/color][/b]")
+		return true
 	return _build_sync()
 
 
