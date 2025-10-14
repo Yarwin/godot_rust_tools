@@ -206,7 +206,7 @@ static func _make_named_layer_constant_decl(named_layer: NamedLayer) -> String:
 	return "    pub const {formatted_name}: u32 = {value};\n".format(
 		{
 			formatted_name = _make_const_name(named_layer.name),
-			value = str(named_layer.layer.to_int() - 1)
+			value = str(named_layer.layer.to_int())
 		}
 	)
 
