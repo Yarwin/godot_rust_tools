@@ -14,17 +14,19 @@ static var _foreground_colors := {
 	37: "white",
 }
 
+
 ## Converts terminal ANSI escape sequences to bbcode for display in Godot's console.
 ## Supports colors and clickable URL links.
 static func to_bbcode(input: String) -> String:
 	return _url_codes_to_bbcode(_color_codes_to_bbcode(input))
+
 
 ## Converts color escape sequences to bbcode.
 ##
 ## [url]https://en.wikipedia.org/wiki/ANSI_escape_code#Colors[/url]
 static func _color_codes_to_bbcode(input: String) -> String:
 	var regex := RegEx.create_from_string(ESC + r"\[([\d;]*)m")
-	
+
 	var output := ""
 	var start := 0
 	var re_match := regex.search(input, start)
@@ -66,19 +68,22 @@ static func _color_codes_to_bbcode(input: String) -> String:
 							var r := params[i + 2]
 							var g := params[i + 3]
 							var b := params[i + 4]
-							output += "[color=#%s]" % [Color.from_rgba8(r, g, b, 255).to_html(false)]
+							output += (
+								"[color=#%s]" % [Color.from_rgba8(r, g, b, 255).to_html(false)]
+							)
 							close_tags.push_back("[/color]")
 							i += 4
 			i += 1
-		
+
 		start = re_match.get_end()
 		re_match = regex.search(input, start)
-	
+
 	output += input.substr(start)
 	while not close_tags.is_empty():
 		output += close_tags.pop_back()
-	
+
 	return output
+
 
 ## Parses a 256-color escape sequence into a Godot [code]Color[/code].
 ##
@@ -105,9 +110,9 @@ static func _color256(code: int) -> Color:
 		var green := code % 6
 		code /= 6
 		var red := code
-		r = red   * 40 + 55 if red   != 0 else 0
+		r = red * 40 + 55 if red != 0 else 0
 		g = green * 40 + 55 if green != 0 else 0
-		b = blue  * 40 + 55 if blue  != 0 else 0
+		b = blue * 40 + 55 if blue != 0 else 0
 	else:
 		var gray := code - 232
 		var level := gray * 10 + 8
@@ -116,23 +121,26 @@ static func _color256(code: int) -> Color:
 		b = level
 	return Color.from_rgba8(r, g, b)
 
+
 ## Converts ANSI terminal escape sequences for hyperlinks into bbcode [code][url][/code] tags.
 ##
 ## [url]https://en.wikipedia.org/wiki/ANSI_escape_code#Operating_System_Command_sequences[/url]
 static func _url_codes_to_bbcode(input: String) -> String:
-	var regex := RegEx.create_from_string(ESC + r"\]8;;(.*?)" + ESC + r"\\(.*?)" + ESC + r"]8;;" + ESC + r"\\")
-	
+	var regex := RegEx.create_from_string(
+		ESC + r"\]8;;(.*?)" + ESC + r"\\(.*?)" + ESC + r"]8;;" + ESC + r"\\"
+	)
+
 	var output := ""
 	var start := 0
 	var re_match := regex.search(input, start)
 	while re_match:
 		output += input.substr(start, re_match.get_start() - start)
-		
+
 		output += "[url=%s]%s[/url]" % [re_match.get_string(1), re_match.get_string(2)]
-		
+
 		start = re_match.get_end()
 		re_match = regex.search(input, start)
-	
+
 	output += input.substr(start)
-	
+
 	return output

@@ -4,6 +4,7 @@ extends EditorPlugin
 var _toolbar: RustToolsToolbar
 var _constants_generator: RustToolsConstantsFileGenerator
 var _export_plugin: RustToolsExportPlugin
+var _popup_menu: PackedScene = preload("res://addons/rust_tools/rust_tools_settings_menu.tscn")
 
 
 func _enter_tree() -> void:
@@ -13,10 +14,12 @@ func _enter_tree() -> void:
 	add_export_plugin(_export_plugin)
 	_add_toolbar()
 	_constants_generator = RustToolsConstantsFileGenerator.new()
+	_add_tool()
 
 
 func _exit_tree() -> void:
 	_remove_toolbar()
+	_remove_tool()
 
 	if _export_plugin:
 		remove_export_plugin(_export_plugin)
@@ -61,6 +64,19 @@ func _remove_toolbar() -> void:
 	remove_control_from_container(EditorPlugin.CONTAINER_TOOLBAR, _toolbar)
 	_toolbar.queue_free()
 	_toolbar = null
+
+
+func _display_rust_tools_config() -> void:
+	var popup: AcceptDialog = _popup_menu.instantiate()
+	EditorInterface.popup_dialog_centered(popup)
+
+
+func _add_tool() -> void:
+	add_tool_menu_item("Godot Rust Tools Settings", _display_rust_tools_config)
+
+
+func _remove_tool() -> void:
+	remove_tool_menu_item("Godot Rust Tools Settings")
 
 
 ## Freezes the editor while building.

@@ -1,0 +1,30 @@
+[gd_scene load_steps=2 format=3 uid="uid://dttbaanhj6ria"]
+
+[ext_resource type="Script" uid="uid://cedo6x8dhys10" path="res://addons/rust_tools/rust_tools_autoload_settings.gd" id="2_gknum"]
+
+[node name="RustToolsSettingsMenu" type="AcceptDialog"]
+oversampling_override = 1.0
+title = "Rust Tools Settings"
+position = Vector2i(0, 36)
+size = Vector2i(1200, 700)
+visible = true
+minimize_disabled = false
+min_size = Vector2i(1200, 700)
+ok_button_text = "Close"
+
+[node name="RustToolsAutoloadSettings" type="VBoxContainer" parent="."]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 1192.0
+offset_bottom = 651.0
+script = ExtResource("2_gknum")
+
+[node name="Tree" type="Tree" parent="RustToolsAutoloadSettings"]
+layout_mode = 2
+size_flags_vertical = 3
+accessibility_name = "Rust Tools Autoloads"
+columns = 6
+column_titles_visible = true
+allow_reselect = true
+hide_root = true
+select_mode = 2

@@ -15,6 +15,11 @@ config/description="This is the Godot project containing the Godot Rust Tools pl
 run/main_scene="uid://bk7wo4wybejwf"
 config/features=PackedStringArray("4.5")
 
+[autoload]
+
+GlobalRustAutoload="*res://rust_autoload.tscn"
+RenamedRustAutoload="*res://renamed_rust_autoload.tscn"
+
 [debug]
 
 gdscript/warnings/exclude_addons=false
@@ -95,3 +100,10 @@ renderer/rendering_method.mobile="gl_compatibility"
 config/build/cargo_package_directories=PackedStringArray("example_extension")
 config/build/gdextension_files=PackedStringArray("uid://2fsssp3dq5f0")
 config/generated_constants/generated_constants_file_paths=PackedStringArray("example_extension/src/project_constants.rs")
+config/generated_constants/autoloads_config={
+"GlobalRustAutoload": {
+1: "RustAutoload",
+3: "crate::RustAutoload",
+4: true
+}
+}

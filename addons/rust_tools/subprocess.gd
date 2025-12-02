@@ -16,9 +16,11 @@ var _poll_thread: Thread
 var _stdout_thread: Thread
 var _stderr_thread: Thread
 
+
 ## Creates a new subprocess to run the given command (executable).
 func _init(command: String) -> void:
 	_command = command
+
 
 ## Sets command line arguments to follow after the command itself.
 ##
@@ -27,9 +29,11 @@ func _init(command: String) -> void:
 func set_args(args: PackedStringArray) -> void:
 	_args = args
 
+
 ## Sets the working directory in which to execute the command. Defaults to the current directory.
 func set_working_dir(working_dir: String) -> void:
 	_working_dir = working_dir
+
 
 ## Runs the command synchronously, blocking until completed.
 ## Returns [code]true[/code] if successful.
@@ -40,12 +44,15 @@ func run_sync() -> bool:
 	var output := []
 	var read_stderr := true
 	var open_console := false
-	var exit_code := OS.execute(command_line.path, command_line.arguments, output, read_stderr, open_console)
+	var exit_code := OS.execute(
+		command_line.path, command_line.arguments, output, read_stderr, open_console
+	)
 
 	var color_output := RustToolsAnsiEscapeCodes.to_bbcode(output[0])
 	print_rich(color_output)
 
 	return exit_code == 0
+
 
 ## Starts the process to run in the background.
 ## Returns [code]true[/code] if started successfully.
@@ -58,7 +65,7 @@ func run_async() -> bool:
 	if dict.is_empty():
 		return false
 
-	var pid: int= dict.pid
+	var pid: int = dict.pid
 	_pid = pid
 
 	var stdio: FileAccess = dict.stdio
@@ -72,11 +79,13 @@ func run_async() -> bool:
 
 	return true
 
+
 ## Kills the running process.
 func kill() -> void:
 	if _pid != -1:
 		OS.kill(_pid)
 		_pid = -1
+
 
 ## Main loop for a thread that regularly polls the subprocess to see if it's finished.
 # Takes pid by argument (rather than using self._pid) to avoid data races and locking.
@@ -87,6 +96,7 @@ func _poll_process(pid: int) -> void:
 	var success := exit_code == 0
 	# Use call_deferred to make sure that signal handlers run on the main thread.
 	_process_finished.call_deferred(success)
+
 
 ## Called on the main thread once the process is finished.
 func _process_finished(success: bool) -> void:
@@ -104,6 +114,7 @@ func _process_finished(success: bool) -> void:
 
 	finished.emit(success)
 
+
 ## Main loop for output-reading threads.
 func _read_process_output(stream: FileAccess) -> void:
 	while true:
@@ -112,6 +123,7 @@ func _read_process_output(stream: FileAccess) -> void:
 			break
 		print_rich(RustToolsAnsiEscapeCodes.to_bbcode(line))
 
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
 		# Note that this object will never be deleted while the process is still running,
@@ -119,6 +131,7 @@ func _notification(what: int) -> void:
 		# Probably the pending _process_finished call also keeps the object alive, and that is the
 		# one that'll clean up (wait on) the helper threads.
 		pass
+
 
 ## Constructs the shell command [code]Dictionary[/code] with changing directory,
 ## accounting for the OS. If it couldn't be constructed, returns an empty
@@ -143,10 +156,7 @@ func _shell_command_with_chdir() -> Dictionary:
 			# All other platforms are Unix-like enough to have an sh-compatible shell.
 			return {
 				"path": "/bin/sh",
-				"arguments": ["-c", (
-						"cd '%s' && %s %s" %
-						[_working_dir, _command, ' '.join(_args)]
-					)],
+				"arguments": ["-c", "cd '%s' && %s %s" % [_working_dir, _command, " ".join(_args)]],
 			}
 		"Windows":
 			# In CMD, we need to enclose the _working_dir in double
@@ -155,16 +165,30 @@ func _shell_command_with_chdir() -> Dictionary:
 			# Similar to Unix, but using cmd.exe and /c, requiring double quotes instead and using /d to allow for different drives.
 			return {
 				"path": "cmd.exe",
-				"arguments": ["/c", (
-					"cd /d \"%s\" && %s %s" %
-					[_working_dir.replace('"', '""'), _command, ' '.join(_args)]
-				)],
+				"arguments":
+				[
+					"/c",
+					(
+						'cd /d "%s" && %s %s'
+						% [_working_dir.replace('"', '""'), _command, " ".join(_args)]
+					)
+				],
 			}
 		"Web", "iOS":
 			# No process spawning, no Rust toolchain. Can't be done.
-			push_error("Rust tools is not supported on %s, since no commands can be launched from the Godot Editor. Contact the developer if you think there is a way." % os)
+			push_error(
+				(
+					"Rust tools is not supported on %s, since no commands can be launched from the Godot Editor. Contact the developer if you think there is a way."
+					% os
+				)
+			)
 			return {}
 		_:
 			# New OS supported by Godot, needs an update.
-			push_error("Rust tools is not supported on %s, because it's an OS added after the last revision of the code. Contact the developer to let them know there is a new OS to evaluate." % os)
+			push_error(
+				(
+					"Rust tools is not supported on %s, because it's an OS added after the last revision of the code. Contact the developer to let them know there is a new OS to evaluate."
+					% os
+				)
+			)
 			return {}

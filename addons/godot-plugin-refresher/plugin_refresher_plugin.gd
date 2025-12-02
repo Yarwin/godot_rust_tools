@@ -36,7 +36,7 @@ func _exit_tree() -> void:
 func _reload_plugins_list() -> void:
 	var cfg_paths: Array[String] = []
 	var plugins := {}
-	var display_names_map := {} # full path to display name
+	var display_names_map := {}  # full path to display name
 
 	find_cfgs(ADDONS_PATH, cfg_paths)
 
@@ -53,14 +53,18 @@ func _reload_plugins_list() -> void:
 
 	# This will be an array of the addon/* directory names.
 	var plugin_dirs: Array[String] = []
-	plugin_dirs.assign(plugins.keys()) # typed array "casting"
+	plugin_dirs.assign(plugins.keys())  # typed array "casting"
 
 	var plugin_names: Array[String] = []
 	plugin_names.assign(plugin_dirs.map(func(k: String) -> String: return plugins[k][0]))
 
 	for plugin_dirname in plugin_dirs:
 		var plugin_name: String = plugins[plugin_dirname][0]
-		var display_name := plugin_name if plugin_names.count(plugin_name) == 1 else "%s (%s)" % [plugin_name, plugin_dirname]
+		var display_name := (
+			plugin_name
+			if plugin_names.count(plugin_name) == 1
+			else "%s (%s)" % [plugin_name, plugin_dirname]
+		)
 		display_names_map[plugins[plugin_dirname][1]] = display_name
 
 	refresher.update_items([plugins, display_names_map])
@@ -119,7 +123,7 @@ func _on_filesystem_changed() -> void:
 
 func get_recent_plugin() -> String:
 	if not plugin_config.has_section_key(SETTINGS, SETTING_RECENT):
-		return "" # not saved yet
+		return ""  # not saved yet
 
 	var recent := str(plugin_config.get_value(SETTINGS, SETTING_RECENT))
 	return recent
@@ -147,7 +151,7 @@ func refresh_plugin(p_path: String) -> void:
 	print("Refreshing plugin: ", p_path)
 
 	var enabled := EditorInterface.is_plugin_enabled(p_path)
-	if enabled: # can only disable an active plugin
+	if enabled:  # can only disable an active plugin
 		EditorInterface.set_plugin_enabled(p_path, false)
 
 	EditorInterface.set_plugin_enabled(p_path, true)

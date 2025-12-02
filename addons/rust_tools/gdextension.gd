@@ -4,6 +4,7 @@
 class_name RustToolsGdextension
 extends Object
 
+
 ## Reloads all GDExtension files registered with the plugin.
 ## Returns [code]true[/code] on success.
 static func reload_all() -> bool:

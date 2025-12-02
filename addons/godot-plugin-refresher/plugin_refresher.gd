@@ -9,7 +9,7 @@ signal confirm_refresh_plugin(p_name: String)
 
 func _ready() -> void:
 	if get_tree().edited_scene_root == self:
-		return # This is the scene opened in the editor!
+		return  # This is the scene opened in the editor!
 	$RefreshButton.icon = EditorInterface.get_editor_theme().get_icon("Reload", "EditorIcons")
 
 
@@ -25,7 +25,7 @@ func update_items(p_plugins_info: Array) -> void:
 	plugin_dirs.assign(plugins.keys())
 	for idx in plugin_dirs.size():
 		var plugin_dirname := plugin_dirs[idx]
-		var plugin_data: Array = plugins[plugin_dirname] # Array[String] used as a Tuple<String, String>.
+		var plugin_data: Array = plugins[plugin_dirname]  # Array[String] used as a Tuple<String, String>.
 		# var plugin_name := plugin_data[0] as String
 		var plugin_path := plugin_data[1] as String
 		var display_name := display_names_map[plugin_path] as String
@@ -49,7 +49,7 @@ func select_plugin(p_name: String) -> void:
 
 func _on_RefreshButton_pressed() -> void:
 	if options.selected == -1:
-		return # nothing selected
+		return  # nothing selected
 
 	var plugin := str(options.get_item_metadata(options.selected))
 	if not plugin:
